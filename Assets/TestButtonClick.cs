@@ -8,7 +8,8 @@ public class TestButtonClick : MonoBehaviour {
 	public Button surveyButton;
 
 	// Use this for initialization
-	void Start () {
+	void Start () 
+	{
 		surveyButton.gameObject.SetActive (false);
 		TapResearch.Configure ("<api_token>");
 		TapResearch.OnSurveyAvailable = this.OnSurveyAvailable;
@@ -19,27 +20,33 @@ public class TestButtonClick : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void Update () {
+	void Update () 
+	{
 
 	}
 
-	public void OnButtonClick() {
+	public void OnButtonClick() 
+	{
 		TapResearch.ShowSurvey ();
 	}
 
-	void OnDidReceiveReward(int quantity, string transactionIdentifier, string currencyName, int payoutEvent) {
+	void OnDidReceiveReward(int quantity, string transactionIdentifier, string currencyName, int payoutEvent)
+	{
 		Debug.Log ("You've earned " + quantity + " " + currencyName + ". " + transactionIdentifier);
 	}
 
-	void OnSurveyModalOpened () {
+	void OnSurveyModalOpened () 
+	{
 		Debug.Log ("Survey Modal Opened");
 	}
 
-	void OnSurveyModalDismissed () {
+	void OnSurveyModalDismissed () 
+	{
 		Debug.Log ("Survey Modal Dismissed");
 	}
 
-	void OnSurveyAvailable() {
+	void OnSurveyAvailable() 
+	{
 		Debug.Log ("Survey Avaliable");
 		surveyButton.gameObject.SetActive (true);		
 	}
