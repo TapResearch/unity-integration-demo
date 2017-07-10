@@ -9,11 +9,10 @@ public class TestButtonClick : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Debug.Log("WOOFWOOFWOOF");
-//		surveyButton.gameObject.SetActive (false);
-		TapResearch.Configure ("2b6026c0a49d10b1c22af0a52345158d");
+		surveyButton.gameObject.SetActive (false);
+		TapResearch.Configure ("<api_token>");
 		TapResearch.OnSurveyAvailable = this.OnSurveyAvailable;
-		TapResearch.SetUniqueUserIdentifier ("KevinUnityTest");
+		TapResearch.SetUniqueUserIdentifier ("<user_identifier>");
 		TapResearch.OnDidReceiveReward = this.OnDidReceiveReward;
 		TapResearch.OnSurveyModalOpened = this.OnSurveyModalOpened;
 		TapResearch.OnSurveyModalDismissed = this.OnSurveyModalDismissed;
