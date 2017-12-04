@@ -12,7 +12,7 @@
     
 }
 
-- (void)tapResearchDidReceiveRewardWithQuantity:(NSInteger)quantity transactionIdentifier:(NSString *)transactionIdentifier currencyName:(NSString *)currencyName payoutEvent:(NSInteger)payoutEvent;
+- (void)tapResearchDidReceiveRewardWithQuantity:(NSInteger)quantity transactionIdentifier:(NSString *)transactionIdentifier currencyName:(NSString *)currencyName payoutEvent:(NSInteger)payoutEvent offerIdentifier:(NSString *) offerIdentifier;
 - (void)tapResearchSurveyModalOpened;
 - (void)tapResearchSurveyModalDismissed;
 - (void)tapResearchOnSurveyAvailable;
@@ -24,10 +24,10 @@
 
 @implementation TRUnityDelegate
 
-- (void)tapResearchDidReceiveRewardWithQuantity:(NSInteger)quantity transactionIdentifier:(NSString *)transactionIdentifier currencyName:(NSString *)currencyName payoutEvent:(NSInteger)payoutEvent;
+- (void)tapResearchDidReceiveRewardWithQuantity:(NSInteger)quantity transactionIdentifier:(NSString *)transactionIdentifier currencyName:(NSString *)currencyName payoutEvent:(NSInteger)payoutEvent offerIdentifier:(NSString *)offerIdentifier;
 
 {
-    const char *message = [[NSString stringWithFormat:@"%ld|%@|%@|%ld", (long)quantity, transactionIdentifier, currencyName, payoutEvent] UTF8String];
+    const char *message = [[NSString stringWithFormat:@"%ld|%@|%@|%ld|%@", (long)quantity, transactionIdentifier, currencyName, payoutEvent, offerIdentifier] UTF8String];
     UnitySendMessage("TapResearch", "OnTapResearchDidReceiveReward", message);
 }
 
@@ -82,8 +82,9 @@ extern "C" {
         [TapResearch showSurveyWithDelegate:iOSDelegate];
     }
     
-    void ShowSurveyWithIdentifier(NSString *identifier) {
-        [TapResearch showSurveyWithIdentifier:identifier delegate:iOSDelegate];
+    void ShowSurveyWithIdentifier(const char *identifier) {
+        NSString *iOSidentifier = identifier ? [NSString stringWithUTF8String:identifier] : nil;
+        [TapResearch showSurveyWithIdentifier:iOSidentifier delegate:iOSDelegate];
     }
     
     void SetUniqueUserIdentifier(const char *userIdentifier) {

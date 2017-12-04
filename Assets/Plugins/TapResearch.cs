@@ -15,12 +15,13 @@ public class TapResearch : MonoBehaviour {
 			if (instance == null) {
 				instance = new GameObject ("TapResearch").AddComponent<TapResearch> ();
 			}
+
 		}
 	}
 
 	// DELEGATE DEFINITIONS
 	public delegate void TRRewardDelegate (int quantity, string transactionIdentifier,
-	String currencyName, int payoutEvent);
+		string currencyName, int payoutEvent, string offerIdentifier);
 	public static TRRewardDelegate OnDidReceiveReward;
 
 	public delegate void TRSurveyModalDelegate ();
@@ -47,7 +48,8 @@ public class TapResearch : MonoBehaviour {
 		string tid = argsArray [1];
 		string currencyName = argsArray [2];
 		int payoutEvent = int.Parse (argsArray [3]);
-		OnDidReceiveReward (quantity, tid, currencyName, payoutEvent);
+		string offerIdentifier = argsArray [4];
+		OnDidReceiveReward (quantity, tid, currencyName, payoutEvent, offerIdentifier);
 	}
 
 	public void OnTapResearchSurveyModalOpened(string args) {
@@ -81,6 +83,7 @@ public class TapResearch : MonoBehaviour {
 	public static void ShowSurvey () { }
 	public static void ShowSurveyWithIdentifier (string surveyIdentifier) { }
 	public static void SetUniqueUserIdentifier (string userIdentifier) { }
+	public static void SetDebugMode(bool debugMode) { }
 
 #elif UNITY_IPHONE && !UNITY_EDITOR
 	public static void Configure (string apiToken) {
@@ -174,6 +177,11 @@ public class TapResearch : MonoBehaviour {
 	public static void SetUniqueUserIdentifier (string userIdentifier) {
 		if (isInitialized())
 			_unityBridge.CallStatic("setUniqueUserIdentifier", new object[]{userIdentifier});
+	}
+
+	public static void SetDebugMode (bool debugMode) {
+		if (isInitialized())
+			_unityBridge.CallStatic("setDebugMode", new object[]{debugMode});
 	}
 
 

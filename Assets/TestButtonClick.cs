@@ -30,9 +30,9 @@ public class TestButtonClick : MonoBehaviour {
 		TapResearch.ShowSurvey ();
 	}
 
-	void OnDidReceiveReward(int quantity, string transactionIdentifier, string currencyName, int payoutEvent)
+	void OnDidReceiveReward(int quantity, string transactionIdentifier, string currencyName, int payoutEvent, string offerIdentifier)
 	{
-		Debug.Log ("You've earned " + quantity + " " + currencyName + ". " + transactionIdentifier);
+		Debug.Log ("You've earned " + quantity + " " + currencyName + ". Transaction identifier - " + transactionIdentifier + ", Offer identifier " + offerIdentifier);
 	}
 
 	void OnSurveyModalOpened () 
