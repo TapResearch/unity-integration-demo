@@ -6,49 +6,45 @@ using UnityEngine.UI;
 public class TestButtonClick : MonoBehaviour {
 
 	public Button surveyButton;
+	public TRPlacement myPlacement;
 
 	// Use this for initialization
-	void Start () 
+	void Start ()
 	{
 		surveyButton.gameObject.SetActive (false);
-		TapResearch.Configure ("<api_token>");
-		TapResearch.OnSurveyAvailable = this.OnSurveyAvailable;
-		TapResearch.SetUniqueUserIdentifier ("<user_identifier>");
-		TapResearch.OnDidReceiveReward = this.OnDidReceiveReward;
-		TapResearch.OnSurveyModalOpened = this.OnSurveyModalOpened;
-		TapResearch.OnSurveyModalDismissed = this.OnSurveyModalDismissed;
+		TapResearch.Configure (API_TOKEN);
+		TapResearch.SetUniqueUserIdentifier (UNIQUE_USER_IDENTIFIER);
+		TapResearch.OnPlacementReady = this.OnPlacementReady;
+		TapResearch.OnSurveyWallOpened = this.OnSurveyWallOpened;
+		TapResearch.OnSurveyWallDismissed = this.OnSurveyWallDismissed;
+		TapResearch.OnReceiveReward = this.OnDidReceiveReward;
+		TapResearch.InitPlacement(PLACEMENT_IDENTIFIER);
 	}
 
-	// Update is called once per frame
-	void Update () 
+	public void OnButtonClick()
 	{
-
+		myPlacement.ShowSurveyWall();
 	}
 
-	public void OnButtonClick() 
+	void OnPlacementReady(TRPlacement placement)
+  {
+		myPlacement = placement;
+		surveyButton.gameObject.SetActive(true);
+  }
+
+  void OnDidReceiveReward(TRReward reward)
 	{
-		TapResearch.ShowSurvey ();
+		Debug.Log ("You've earned " + reward.RewardAmount + " " + reward.CurrencyName + ". " + reward.TransactionIdentifier);
 	}
 
-	void OnDidReceiveReward(int quantity, string transactionIdentifier, string currencyName, int payoutEvent, string offerIdentifier)
-	{
-		Debug.Log ("You've earned " + quantity + " " + currencyName + ". Transaction identifier - " + transactionIdentifier + ", Offer identifier " + offerIdentifier);
-	}
-
-	void OnSurveyModalOpened () 
+	void OnSurveyWallOpened (TRPlacement placement)
 	{
 		Debug.Log ("Survey Modal Opened");
 	}
 
-	void OnSurveyModalDismissed () 
+	void OnSurveyWallDismissed (TRPlacement placement)
 	{
 		Debug.Log ("Survey Modal Dismissed");
 	}
 
-	void OnSurveyAvailable() 
-	{
-		Debug.Log ("Survey Avaliable");
-		surveyButton.gameObject.SetActive (true);		
-	}
-		
 }

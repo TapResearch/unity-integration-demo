@@ -8,87 +8,115 @@
 
 #import <TapResearchSDK/TapResearchSDK.h>
 
-@interface TRUnityDelegate : NSObject<TapResearchDelegate, TapResearchSurveyDelegate> {
-    
+@interface TRUnityDelegate : NSObject<TapResearchRewardDelegate, TapResearchSurveyDelegate> {
+
 }
 
-- (void)tapResearchDidReceiveRewardWithQuantity:(NSInteger)quantity transactionIdentifier:(NSString *)transactionIdentifier currencyName:(NSString *)currencyName payoutEvent:(NSInteger)payoutEvent offerIdentifier:(NSString *) offerIdentifier;
-- (void)tapResearchSurveyModalOpened;
-- (void)tapResearchSurveyModalDismissed;
-- (void)tapResearchOnSurveyAvailable;
-- (void)tapResearchOnSurveyNotAvailable;
-
-
+- (void)tapResearchDidReceiveReward:(TRReward *)reward;
+- (void)tapResearchSurveyWallOpenedWithPlacement:(TRPlacement *)placement;
+- (void)tapResearchSurveyWallDismissedWithPlacement:(TRPlacement *)placement;
 
 @end
 
 @implementation TRUnityDelegate
 
-- (void)tapResearchDidReceiveRewardWithQuantity:(NSInteger)quantity transactionIdentifier:(NSString *)transactionIdentifier currencyName:(NSString *)currencyName payoutEvent:(NSInteger)payoutEvent offerIdentifier:(NSString *)offerIdentifier;
-
+- (void)tapResearchDidReceiveReward:(TRReward *)reward;
 {
-    const char *message = [[NSString stringWithFormat:@"%ld|%@|%@|%ld|%@", (long)quantity, transactionIdentifier, currencyName, payoutEvent, offerIdentifier] UTF8String];
-    UnitySendMessage("TapResearch", "OnTapResearchDidReceiveReward", message);
+    NSDictionary *rewardDict = [TRSerilizationHelper dictionaryWithPropertiesOfObject: reward];
+    NSString *jsonString = [TRSerilizationHelper jsonStringFromDictionary:rewardDict];
+    UnitySendMessage("TapResearch", "OnTapResearchDidReceiveReward", [jsonString UTF8String]);
 }
 
-- (void)tapResearchSurveyModalOpened
+- (void)tapResearchSurveyWallOpenedWithPlacement:(TRPlacement *)placement;
 {
-    UnitySendMessage("TapResearch", "OnTapResearchSurveyModalOpened", [@"" UTF8String]);
+    [self sendPlacement:placement message:@"OnTapResearchSurveyModalOpened"];
 }
 
-- (void)tapResearchSurveyModalDismissed
+- (void)tapResearchSurveyWallDismissedWithPlacement:(TRPlacement *)placement;
 {
-    UnitySendMessage("TapResearch", "OnTapResearchSurveyModalDismissed", [@"" UTF8String]);
+    [self sendPlacement:placement message:@"OnTapResearchSurveyModalOpenedWithPlacement"];
 }
 
-- (void)tapResearchOnSurveyAvailable
+- (void)sendPlacement:(TRPlacement *)placement message:(NSString *)message
 {
-    UnitySendMessage("TapResearch", "OnTapResearchSurveyAvailable", [@"" UTF8String]);
+    NSDictionary *placementDict = [TRSerilizationHelper dictionaryWithPropertiesOfObject:placement];
+    NSString *jsonString = [TRSerilizationHelper jsonStringFromDictionary:placementDict];
+    UnitySendMessage("TapResearch", [message UTF8String], [jsonString UTF8String]);
 }
-
-- (void)tapResearchOnSurveyNotAvailable
-{
-    UnitySendMessage("TapResearch", "OnTapResearchSurveyNotAvailable", [@"" UTF8String]);
-}
-
-
 
 @end
 
 #include <iostream>
 using namespace std;
 
+#define DEV_PLATFORM @"unity"
+
 NSString *iOSToken;
 TRUnityDelegate *iOSDelegate = nil;
 BOOL configured = NO;
+NSMutableDictionary *placementsCache = [[NSMutableDictionary alloc]init];
+
+UIColor *colorFromHexString(const char *hexColor) {
+    unsigned rgbValue = 0;
+    NSString *hexString = [NSString stringWithUTF8String:hexColor];
+    NSScanner *scanner = [NSScanner scannerWithString:hexString];
+    [scanner setScanLocation:1];
+    [scanner scanHexInt:&rgbValue];
+
+    return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
+}
+
 
 extern "C" {
-    void TRIOSConfigure(const char *apiToken) {
+    void TRIOSConfigure(const char *apiToken, const char *version) {
         if (configured) return;
-        
+
         iOSToken = [NSString stringWithUTF8String:apiToken];
+        NSString *versionString = [NSString stringWithUTF8String:version];
         iOSDelegate = [[TRUnityDelegate alloc] init];
-        
-        [TapResearch initWithApiToken:iOSToken delegate:iOSDelegate];
+        [TapResearch initWithApiToken:iOSToken developmentPlatform:DEV_PLATFORM developmentPlatformVersion:versionString delegate:iOSDelegate];
         configured = YES;
     }
-    
-    bool IsSurveyAvailable() {
-        if (!configured) return NO;
-        return [TapResearch isSurveyAvailable];
-    }
-    
-    void ShowSurvey() {
-        [TapResearch showSurveyWithDelegate:iOSDelegate];
-    }
-    
-    void ShowSurveyWithIdentifier(const char *identifier) {
-        NSString *iOSidentifier = identifier ? [NSString stringWithUTF8String:identifier] : nil;
-        [TapResearch showSurveyWithIdentifier:iOSidentifier delegate:iOSDelegate];
-    }
-    
+
     void SetUniqueUserIdentifier(const char *userIdentifier) {
         NSString *identifier = [NSString stringWithUTF8String:userIdentifier];
         [TapResearch setUniqueUserIdentifier:identifier];
     }
+
+    void InitPlacement(const char *placementIdentifier) {
+        NSString *placementIdentifierString = [NSString stringWithUTF8String:placementIdentifier];
+        [TapResearch initPlacementWithIdentifier:placementIdentifierString placementBlock:^(TRPlacement *placement) {
+            [placementsCache setObject:placement forKey:placement.placementIdentifier];
+            NSDictionary *placementDict = [TRSerilizationHelper dictionaryWithPropertiesOfObject: placement];
+            NSString *jsonString = [TRSerilizationHelper jsonStringFromDictionary:placementDict];
+            UnitySendMessage("TapResearch", "OnTapResearchPlacementReady", [jsonString UTF8String]);
+        }];
+    }
+
+    void ShowSurveyWall(const char* placementIdentifier) {
+        NSString *placementIdentifierString = [NSString stringWithUTF8String:placementIdentifier];
+        TRPlacement *placement = [placementsCache valueForKey:placementIdentifierString];
+        if (placement) {
+            [placement showSurveyWallWithDelegate:iOSDelegate];
+        }
+    }
+
+    void SetNavigationBarColor(const char *hexColor) {
+        if (!hexColor) return;
+        UIColor *color = colorFromHexString(hexColor);
+        [TapResearch setNavigationBarColor:color];
+    }
+
+    void SetNavigationBarText(const char *text) {
+        if (!text) return;
+        NSString *titleText = [NSString stringWithUTF8String:text];
+        [TapResearch setNavigationBarText:titleText];
+    }
+
+    void SetNavigationBarTextColor(const char *hexColor) {
+        if (!hexColor) return;
+        UIColor *color = colorFromHexString(hexColor);
+        [TapResearch setNavigationBarTextColor:color];
+    }
+
 }
