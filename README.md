@@ -1,6 +1,6 @@
 # TapResearch Unity Integration demo app
 
-This simple app demonstrates how to integrate the [TapResearch Unity SDK](https://www.tapresearch.com/docs/unity-integration-guide) in your app.
+This simple app demonstrates how to integrate the [TapResearch Unity SDK](https://www.tapresearch.com/docs/unity_integration_guide) in your app.
 
 * Clone the repo
 
