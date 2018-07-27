@@ -29,12 +29,12 @@
 
 - (void)tapResearchSurveyWallOpenedWithPlacement:(TRPlacement *)placement;
 {
-    [self sendPlacement:placement message:@"OnTapResearchSurveyModalOpened"];
+    [self sendPlacement:placement message:@"TapResearchOnSurveyWallOpened"];
 }
 
 - (void)tapResearchSurveyWallDismissedWithPlacement:(TRPlacement *)placement;
 {
-    [self sendPlacement:placement message:@"OnTapResearchSurveyModalOpenedWithPlacement"];
+    [self sendPlacement:placement message:@"TapResearchOnSurveyWallDismissed"];
 }
 
 - (void)sendPlacement:(TRPlacement *)placement message:(NSString *)message

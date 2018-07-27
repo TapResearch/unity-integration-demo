@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
     public class TapResearch : MonoBehaviour {
 
         private static AndroidJavaClass _unityBridge;
-        private const string version = "2.0.1";
+        private const string version = "2.0.3";
         // Make sure there is only one instance of TapResearch
         private static TapResearch _instance;
 
