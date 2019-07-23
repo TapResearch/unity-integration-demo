@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
     public class TapResearch : MonoBehaviour {
 
         private static AndroidJavaClass _unityBridge;
-        private const string version = "2.0.4";
+        private const string version = "2.0.5";
         // Make sure there is only one instance of TapResearch
         private static TapResearch _instance;
 
@@ -190,8 +190,9 @@ using System.Runtime.InteropServices;
 
       public static void ShowSurveyWall(string placementIdentifier)
       {
-        if (isInitialized())
+        if (isInitialized()) {
           _unityBridge.CallStatic("showSurveyWall", placementIdentifier);
+        }
       }
 
       public static void SetUniqueUserIdentifier(string userIdentifier)
