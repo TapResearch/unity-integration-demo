@@ -1,4 +1,4 @@
-﻿#if (UNITY_5 || UNITY_2017)
+﻿#if (UNITY_5_3_OR_NEWER)
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
