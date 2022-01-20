@@ -1,0 +1,21 @@
+<dependencies>
+  
+    <androidPackages>
+    <repositories>
+      <repository>https://artifactory.tools.tapresearch.io/artifactory/tapresearch-android-sdk</repository>
+      <repository>https://maven.google.com</repository>
+    </repositories>
+    <androidPackage spec="com.tapr:tapresearch:2.4.1"></androidPackage>      
+    <androidPackage spec="com.tapr.unitybridge:tapresearch:2.4.1"></androidPackage>
+  </androidPackages>
+    
+
+  <iosPods>
+    <iosPod name="TapResearch" version="2.4.1" minTargetSdk="10.0" useFrameworks="true">
+      <sources>
+        <source>https://github.com/CocoaPods/Specs.git</source>
+      </sources>
+    </iosPod>
+  </iosPods>
+
+</dependencies>
