@@ -13,19 +13,17 @@ $ git clone git@github.com:TapResearch/unity-integration-demo.git
 * If you want to see things in action make sure you add your Unity api token and a user identifier in `TestButtonClick.cs`
 
 ~~~~csharp
-
-  @Override
-  void Start ()
-  {
-   surveyButton.gameObject.SetActive (false);
-   TapResearch.Configure ("<api_token>");
-   TapResearch.OnSurveyAvailable = this.OnSurveyAvailable;
-   TapResearch.SetUniqueUserIdentifier ("<user_identifier>");
-   TapResearch.OnDidReceiveReward = this.OnDidReceiveReward;
-   TapResearch.OnSurveyModalOpened = this.OnSurveyModalOpened;
-   TapResearch.OnSurveyModalDismissed = this.OnSurveyModalDismissed;
- }
-
+    void Awake()
+    {
+        surveyButton.enabled = false;
+        TapResearchSDK.Configure("<api_token>");
+        TapResearchSDK.SetUniqueUserIdentifier("<user_identifier>");
+        TapResearchSDK.OnSurveyWallOpened = this.OnSurveyModalOpened;
+        TapResearchSDK.OnSurveyWallDismissed = this.OnSurveyModalDismissed;
+        TapResearchSDK.OnReceiveRewardCollection = this.OnReceiveRewardCollection;
+        TapResearchSDK.OnPlacementEventUnavailable = this.OnPlacementEventUnavailable;
+        TapResearchSDK.OnPlacementEventReady = this.OnPlacementEventReady;
+    }
 
 ~~~~
 * Please note that the SDK only works for iOS or Android and not for the default player
