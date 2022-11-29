@@ -2,49 +2,71 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+using TapResearch;
 
-public class TestButtonClick : MonoBehaviour {
+public class TestButtonClick : MonoBehaviour
+{
+    public Button surveyButton;
+    private TRPlacement mainPlacement;
 
-	public Button surveyButton;
-	public TRPlacement myPlacement;
+    // Use this for initialization
+    void Awake()
+    {
+        surveyButton.enabled = false;
+        TapResearchSDK.Configure("<api_token>");
+        TapResearchSDK.SetUniqueUserIdentifier("<user_identifier>");
+        TapResearchSDK.OnSurveyWallOpened = this.OnSurveyModalOpened;
+        TapResearchSDK.OnSurveyWallDismissed = this.OnSurveyModalDismissed;
+        TapResearchSDK.OnReceiveRewardCollection = this.OnReceiveRewardCollection;
+        TapResearchSDK.OnReceiveReward = this.OnDidReceiveReward;
+        TapResearchSDK.OnPlacementEventUnavailable = this.OnPlacementEventUnavailable;
+        TapResearchSDK.OnPlacementEventReady = this.OnPlacementEventReady;
+    }
 
-	// Use this for initialization
-	void Start ()
-	{
-		surveyButton.gameObject.SetActive (false);
-		TapResearch.Configure (API_TOKEN);
-		TapResearch.SetUniqueUserIdentifier (UNIQUE_USER_IDENTIFIER);
-		TapResearch.OnPlacementReady = this.OnPlacementReady;
-		TapResearch.OnSurveyWallOpened = this.OnSurveyWallOpened;
-		TapResearch.OnSurveyWallDismissed = this.OnSurveyWallDismissed;
-		TapResearch.OnReceiveReward = this.OnDidReceiveReward;
-		TapResearch.InitPlacement(PLACEMENT_IDENTIFIER);
-	}
+    private void OnPlacementEventReady(TRPlacement placement)
+    {
+        surveyButton.enabled = true;
+        Debug.Log("Placement Received " + placement.PlacementIdentifier);
+        if (placement.PlacementCode != TRPlacement.PLACEMENT_CODE_SDK_NOT_READY)
+        {
+            mainPlacement = placement;
+        }
+    }
 
-	public void OnButtonClick()
-	{
-		myPlacement.ShowSurveyWall();
-	}
+    private void OnPlacementEventUnavailable(string expiredPlacement)
+    {
+        Debug.Log("Placement expired: " + expiredPlacement);
+    }
 
-	void OnPlacementReady(TRPlacement placement)
-  {
-		myPlacement = placement;
-		surveyButton.gameObject.SetActive(true);
-  }
+    public void OnButtonClick()
+    {
+        Debug.Log("Button pressed: attmpting to show: " + mainPlacement.IsSurveyWallAvailable + " " + mainPlacement.PlacementIdentifier);
+        if (mainPlacement.IsSurveyWallAvailable)
+            mainPlacement.ShowSurveyWall();
+    }
 
-  void OnDidReceiveReward(TRReward reward)
-	{
-		Debug.Log ("You've earned " + reward.RewardAmount + " " + reward.CurrencyName + ". " + reward.TransactionIdentifier);
-	}
+    void OnDidReceiveReward(TRReward reward)
+    {
+        Debug.Log("You've earned " + reward.RewardAmount + " " + reward.CurrencyName + ". " + reward.TransactionIdentifier);
+    }
 
-	void OnSurveyWallOpened (TRPlacement placement)
-	{
-		Debug.Log ("Survey Modal Opened");
-	}
+    void OnReceiveRewardCollection(TRReward[] rewards)
+    {
+        foreach (TRReward reward in rewards)
+        {
+            Debug.Log("Collection You've earned " + reward.RewardAmount + " " + reward.CurrencyName + ". " + reward.TransactionIdentifier);
+        }
+    }
 
-	void OnSurveyWallDismissed (TRPlacement placement)
-	{
-		Debug.Log ("Survey Modal Dismissed");
-	}
+    void OnSurveyModalOpened(TRPlacement placement)
+    {
+        Debug.Log("Survey Modal Opened");
+    }
+
+    void OnSurveyModalDismissed(TRPlacement placement)
+    {
+        Debug.Log("Survey Modal Dismissed");
+    }
 
 }
