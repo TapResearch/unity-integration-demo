@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+<<<<<<< HEAD
+<<<<<<<< HEAD:Assets/TapResearchSDK/Editor/Templates/iOS.meta
+guid: 32f68d64b562b4776bc25db92c4606d5
+========
+guid: 947674cf2a3be46398bd4981a27cb272
+>>>>>>>> PUP-24_add-events_branched-from-PUB-23:Assets/TapResearchSDK.meta
+=======
+guid: 7fe1c524e17504345890171ff00ef150
+>>>>>>> origin/master
+folderAsset: yes
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
