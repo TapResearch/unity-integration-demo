@@ -34,9 +34,9 @@ public class TapResearchTestButtonClick : MonoBehaviour
         TapResearchSDK.OnEventOpened = this.OnEventModalOpened;
         TapResearchSDK.OnEventDismissed = this.OnEventModalDismissed;
 #if UNITY_IPHONE
-		TapResearchSDK.Configure("f9c1b05047b88acaa9f08f35f4b3dad5");
+		TapResearchSDK.Configure("YOUR_IOS_API_TOKEN");
 #elif UNITY_ANDROID        
-        TapResearchSDK.Configure("8fa3fdf0536bb61154e3907d5833d195");
+        TapResearchSDK.Configure("YOUR_ANDROID_API_TOKEN");
 #endif
         TapResearchSDK.SetUniqueUserIdentifier("TestUser");
 
@@ -49,9 +49,9 @@ public class TapResearchTestButtonClick : MonoBehaviour
     {
         Debug.Log("Unity C# TestButton: Placement Ready " + placement.PlacementIdentifier);
 #if UNITY_IPHONE
-        if (placement.PlacementIdentifier.Equals("bd246a420312a623fdb3d1d5ef9fe262"))
+        if (placement.PlacementIdentifier.Equals("YOUR_IOS_PLACEMENT_ID"))
 #elif UNITY_ANDROID        
-        if (placement.PlacementIdentifier.Equals("fbcf70ba1c8abfb0f5194fa1ff598006"))
+        if (placement.PlacementIdentifier.Equals("YOUR_ANDROID_PLACEMENT_ID"))
 #endif
         {
             mainPlacement = placement;
